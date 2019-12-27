@@ -1,0 +1,77 @@
+---
+title: "Vehicle Attributes and Their Effects on Miles Per Gallon (MPG)"
+author: "William Moore"
+date: "December 26, 2019"
+output: slidy_presentation
+html_document:
+number_sections: yes
+toc: yes
+ioslides_presentation: default
+mode: selfcontained
+job: Reproducible Pitch Presentation
+subtitle: Variables and MPG
+highlighter: highlight.js
+widgets: bootstrap
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Executive Summary
+
+There has been an ongoing debate of which attributes on vehicles are related to impacts of a vehicle's miles per gallon (MPG) (outcome).
+
+We would like to focus on the difference of the MPG between automatic and manual transmissions, and the effects the vehicle attributes have on MPG.  We are using the `mtcars` dataset in car package as our data source.  We will use the linear Regression Models techniques to answer the below questions:
+
+* Is an automatic or manual transmission better for MPG?
+* Quantifying how different is the MPG between automatic and manual transmissions?
+
+
+# Data Processing
+
+## Load and Test Data
+
+#  The data used was the 'mtcars' dataset, which was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973-74 models).
+
+```{r cache=TRUE}
+library(datasets)
+mpgData <- with(mtcars, data.frame(mpg, am))
+mpgData$am <- factor(mpgData$am, labels = c("Automatic", "Manual"))
+#summary(mpgData)
+```
+
+## Process Data
+
+### Q1: Is an automatic or manual transmission better for MPG?  
+
+```{r cache=TRUE}
+summary(mpgData[mpgData$am == "Automatic",])
+summary(mpgData[mpgData$am == "Manual",])
+```
+
+### Q2: Quantifying how different is the MPG between automatic and manual transmissions?  
+
+```{r cache=TRUE}
+fit <- lm(mpg ~ as.integer(am), data=mpgData)
+summary(fit)
+```
+
+# Conclusion
+We can conclude that the manual transmission is better than automatic for MPG, which increased by `r coef(fit)[2]`.
+
+# Appendix
+
+## Figure 1. MPG between automatic and manual transmissions
+
+```{r cache=TRUE}
+par(mfrow=c(1,2))
+with(mpgData,{
+     boxplot(mpg ~ am, 
+             ylab = "miles per gallon (MPG)")
+     plot(mpg ~ as.integer(am),
+             xlab = "Automatic (1) or Manual(2)",
+             ylab = "miles per gallon (MPG)")
+     abline(fit, col=2)
+     })
+```
